@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Program szkoleniowy BHP</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="access-locked">
+    <div class="access-gateway" id="access-gateway">
+      <section class="access-panel">
+        <div>
+          <p class="eyebrow">Dostęp do systemu</p>
+          <h1>Centrum BHP</h1>
+          <p>Administrator zarządza szkoleniami, pytaniami i raportami. Pracownik używa wyłącznie swojego kodu dostępu.</p>
+        </div>
+        <div class="access-grid">
+          <form class="access-card" id="admin-login-form">
+            <h2>Centrum dowodzenia</h2>
+            <label>
+              Osoba uprawniona
+              <input id="admin-name" type="text" placeholder="Imię i nazwisko" required />
+            </label>
+            <label>
+              Kod administratora
+              <input id="admin-code" type="password" placeholder="Kod dostępu" required />
+            </label>
+            <button class="primary" type="submit">Wejdź do centrum</button>
+          </form>
+          <form class="access-card" id="employee-login-form">
+            <h2>Portal pracownika</h2>
+            <label>
+              Kod pracownika
+              <input id="employee-access-code" type="text" placeholder="np. BHP-123456" required />
+            </label>
+            <button class="secondary" type="submit">Rozpocznij szkolenie</button>
+          </form>
+        </div>
+        <p class="access-message" id="access-message"></p>
+      </section>
+    </div>
+
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Nawigacja">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">BHP</span>
+          <div>
+            <strong>Centrum BHP</strong>
+            <span>centrum dowodzenia</span>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav-button active" data-view="dashboard" type="button">
+            <span aria-hidden="true">⌂</span>
+            Centrum
+          </button>
+          <button class="nav-button" data-view="employee" type="button">
+            <span aria-hidden="true">▶</span>
+            Portal pracownika
+          </button>
+          <button class="nav-button" data-view="questions" type="button">
+            <span aria-hidden="true">?</span>
+            Baza wiedzy
+          </button>
+        </nav>
+        <div class="sidebar-note">
+          <strong>Próg zaliczenia</strong>
+          <span>70% poprawnych odpowiedzi</span>
+          <button class="ghost logout-button" id="logout-button" type="button">Wyloguj</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow">Centrum dowodzenia</p>
+            <h1 id="page-title">Panel administratora</h1>
+          </div>
+          <div class="status-pill" id="storage-status">Dane zapisują się w tej przeglądarce</div>
+        </section>
+
+        <section class="view active" id="dashboard-view" aria-labelledby="page-title">
+          <div class="metrics">
+            <article class="metric">
+              <span>Pracownicy</span>
+              <strong id="employee-count">0</strong>
+            </article>
+            <article class="metric">
+              <span>Zaliczone</span>
+              <strong id="passed-count">0</strong>
+            </article>
+            <article class="metric">
+              <span>Pula pytań</span>
+              <strong id="question-count">0</strong>
+            </article>
+            <article class="metric">
+              <span>Moduły szkolenia</span>
+              <strong id="module-count">0</strong>
+            </article>
+            <article class="metric">
+              <span>Losowane w teście</span>
+              <strong id="draw-count-label">5</strong>
+            </article>
+          </div>
+
+          <div class="work-grid">
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Dodaj pracownika</h2>
+                  <p>Po dodaniu pracownik od razu rozpocznie szkolenie od broszury bezpieczeństwa.</p>
+                </div>
+              </div>
+              <form class="form" id="employee-form">
+                <label>
+                  Imię i nazwisko
+                  <input id="employee-name" type="text" autocomplete="name" placeholder="np. Anna Kowalska" required />
+                </label>
+                <label>
+                  Stanowisko
+                  <input id="employee-role" type="text" placeholder="np. Magazynier" required />
+                </label>
+                <button class="primary" type="submit">Dodaj pracownika</button>
+              </form>
+            </section>
+
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Ustawienia szkolenia</h2>
+                  <p>Temat będzie widoczny w podsumowaniu i teście wiedzy.</p>
+                </div>
+              </div>
+              <form class="form" id="settings-form">
+                <label>
+                  Temat podsumowania
+                  <input id="training-topic" type="text" placeholder="np. Praca na wysokości" required />
+                </label>
+                <label>
+                  Liczba pytań losowanych do testu
+                  <input id="draw-count" type="number" min="1" max="20" required />
+                </label>
+                <button class="secondary" type="submit">Zapisz ustawienia</button>
+              </form>
+            </section>
+          </div>
+
+          <section class="table-section">
+            <div class="section-heading">
+              <h2>Podsumowanie wiedzy</h2>
+              <span class="status-pill">Edytowalne części przed testem</span>
+            </div>
+            <div class="summary-list" id="summary-list"></div>
+          </section>
+
+          <section class="table-section">
+            <div class="section-heading">
+              <h2>Osoby uprawnione</h2>
+              <span class="status-pill">Dostęp do centrum dowodzenia</span>
+            </div>
+            <form class="inline-form" id="admin-form">
+              <input id="new-admin-name" type="text" placeholder="Imię i nazwisko" required />
+              <input id="new-admin-code" type="text" placeholder="Kod administratora" required />
+              <button class="secondary" type="submit">Dodaj uprawnienie</button>
+            </form>
+            <div class="admin-list" id="admin-list"></div>
+          </section>
+
+          <section class="table-section">
+            <div class="section-heading">
+              <h2>Pracownicy</h2>
+              <button class="ghost" id="reset-demo" type="button">Przywróć dane startowe</button>
+            </div>
+            <div class="employee-list" id="employee-list"></div>
+          </section>
+
+          <section class="table-section">
+            <div class="section-heading">
+              <h2 id="reports-title">Rejestr szkoleń i testów</h2>
+              <span class="status-pill" id="reports-subtitle">Potwierdzenia odbycia testu wiedzy</span>
+            </div>
+            <div class="report-database" id="report-database"></div>
+          </section>
+        </section>
+
+        <section class="view" id="employee-view" aria-labelledby="training-title">
+          <div class="training-layout">
+            <section class="panel training-panel">
+              <div class="training-header">
+                <div>
+                  <p class="eyebrow">Ścieżka pracownika</p>
+                  <h2 id="training-title">Szkolenie BHP</h2>
+                </div>
+                <label class="select-label">
+                  Pracownik
+                  <select id="active-employee"></select>
+                </label>
+                <button class="ghost admin-return" id="return-admin" type="button">Centrum dowodzenia</button>
+              </div>
+
+              <div class="stepper" aria-label="Etapy szkolenia">
+                <div class="step active" data-step-label="brochure">1. Broszura</div>
+                <div class="step" data-step-label="animation">2. Podsumowanie</div>
+                <div class="step" data-step-label="test">3. Test</div>
+                <div class="step" data-step-label="result">4. Wynik</div>
+              </div>
+
+              <div class="training-stage active" id="brochure-stage">
+                <div class="brochure-layout">
+                  <section class="brochure-copy">
+                    <p class="eyebrow">Obowiązkowa polityka bezpieczeństwa</p>
+                    <h3>Broszura powitalna MEGA - Container Concepts</h3>
+                    <div class="brochure-progress">
+                      <strong id="brochure-counter">Strona 1/29</strong>
+                      <span id="brochure-status">Broszura nieukończona</span>
+                    </div>
+                    <div class="progress-track" aria-label="Postęp broszury">
+                      <span id="brochure-progress"></span>
+                    </div>
+                    <div class="brochure-actions">
+                      <button class="secondary" id="previous-page" type="button">Poprzednia strona</button>
+                      <button class="primary" id="next-page" type="button">Następna strona</button>
+                    </div>
+                    <div class="zoom-controls" aria-label="Powiększenie broszury">
+                      <button class="secondary icon-button" id="zoom-out" type="button">−</button>
+                      <span class="zoom-value" id="zoom-value">125%</span>
+                      <button class="secondary icon-button" id="zoom-in" type="button">+</button>
+                      <button class="ghost" id="zoom-reset" type="button">Reset</button>
+                    </div>
+                    <button class="primary request-test" id="start-course" type="button" disabled>Przejdź do podsumowania</button>
+                  </section>
+                  <section class="brochure-viewer" aria-label="Podgląd broszury">
+                    <iframe id="brochure-frame" title="Broszura powitalna MEGA Container Concepts"></iframe>
+                    <article class="brochure-translation" id="brochure-translation"></article>
+                  </section>
+                </div>
+              </div>
+
+              <div class="training-stage" id="animation-stage">
+                <div class="animation-wrap">
+                  <div class="safety-animation" aria-label="Animacja szkoleniowa">
+                    <div class="floor-line"></div>
+                    <div class="worker">
+                      <span class="helmet"></span>
+                      <span class="head"></span>
+                      <span class="body"></span>
+                      <span class="arm arm-left"></span>
+                      <span class="arm arm-right"></span>
+                      <span class="leg leg-left"></span>
+                      <span class="leg leg-right"></span>
+                    </div>
+                    <div class="hazard-zone">
+                      <span></span>
+                      <strong>Strefa ryzyka</strong>
+                    </div>
+                    <div class="shield">
+                      <span></span>
+                    </div>
+                    <div class="signal signal-one"></div>
+                    <div class="signal signal-two"></div>
+                  </div>
+                  <div class="animation-copy">
+                    <h3 id="animation-topic">Podsumowanie wiedzy</h3>
+                    <p>
+                      Krótka powtórka najważniejszych zasad z broszury przed testem wiedzy.
+                    </p>
+                    <div class="course-progress">
+                      <strong id="course-counter">Etap 1/1</strong>
+                      <span id="course-status">Podsumowanie nieukończone</span>
+                    </div>
+                    <div class="progress-track" aria-label="Postęp podsumowania">
+                      <span id="animation-progress"></span>
+                    </div>
+                    <article class="course-card" id="course-card">
+                      <p class="eyebrow" id="course-label">Najważniejsze informacje</p>
+                      <h4 id="course-title">Tytuł modułu</h4>
+                      <p id="course-summary"></p>
+                      <ul id="course-points"></ul>
+                    </article>
+                    <div class="course-actions">
+                      <button class="secondary" id="previous-module" type="button">Poprzedni etap</button>
+                      <button class="primary" id="start-animation" type="button">Następny etap</button>
+                    </div>
+                    <button class="primary request-test" id="request-test" type="button" disabled>Poproś o test</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="training-stage" id="test-stage">
+                <div class="test-header">
+                  <div>
+                    <h3>Test końcowy</h3>
+                    <p id="test-context">Pytania zostaną wybrane losowo z puli.</p>
+                  </div>
+                  <div class="score-chip" id="question-progress">0/0</div>
+                </div>
+                <form id="test-form" class="test-form"></form>
+                <div class="test-actions">
+                  <button class="secondary" id="previous-question" type="button">Poprzednie</button>
+                  <button class="secondary" id="next-question" type="button">Następne</button>
+                  <button class="ghost" id="restart-test" type="button">Nowe podejście</button>
+                  <button class="primary" id="submit-test" type="button">Sprawdź wynik</button>
+                </div>
+              </div>
+
+              <div class="training-stage" id="result-stage">
+                <div class="result-box" id="result-box"></div>
+                <button class="secondary" id="new-attempt" type="button">Rozpocznij od broszury</button>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="questions-view" aria-labelledby="questions-title">
+          <div class="work-grid">
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <h2 id="questions-title">Baza wiedzy i pytań</h2>
+                  <p>Administrator może dodawać, edytować i usuwać pytania testowe.</p>
+                </div>
+              </div>
+              <form class="form" id="question-form">
+                <label>
+                  Treść pytania
+                  <textarea id="question-text" rows="3" placeholder="Wpisz pytanie testowe" required></textarea>
+                </label>
+                <label>
+                  Odpowiedź A
+                  <input id="answer-0" type="text" required />
+                </label>
+                <label>
+                  Odpowiedź B
+                  <input id="answer-1" type="text" required />
+                </label>
+                <label>
+                  Odpowiedź C
+                  <input id="answer-2" type="text" required />
+                </label>
+                <label>
+                  Poprawna odpowiedź
+                  <select id="correct-answer">
+                    <option value="0">A</option>
+                    <option value="1">B</option>
+                    <option value="2">C</option>
+                  </select>
+                </label>
+                <button class="primary" type="submit">Dodaj do puli</button>
+              </form>
+            </section>
+
+            <section class="panel">
+              <div class="panel-heading">
+                <div>
+                  <h2>Pula pytań</h2>
+                  <p>Test losuje pytania z tej listy przy każdym podejściu.</p>
+                </div>
+              </div>
+              <div class="question-list" id="question-list"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="empty-state-template">
+      <div class="empty-state">
+        <strong>Brak danych</strong>
+        <span>Dodaj pierwszą pozycję, aby kontynuować.</span>
+      </div>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
